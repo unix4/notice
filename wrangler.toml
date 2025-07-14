@@ -2,20 +2,16 @@ name = "notice"
 main = "./src/worker.ts"
 compatibility_date = "2024-01-01"
 
-[vars]
-TELEGRAM_TOKEN = "7887841029:AAGgUNod2x2KDRR2r7G9Yez4ianftAjDqRw"
-
 [[d1_databases]]
 binding = "DB"
 database_name = "notice"
 database_id = "004820c6-4571-4b7b-89b6-8789a20619ac"
 
-
 [assets]
-directory = "./frontend"   # 静态文件目录
-binding   = "ASSETS"       # ★ 让 env.ASSETS 可用
-run_worker_first = ["/api/*"]   # 仅 /api/* 先走 Worker，其余直接走静态资源
-not_found_handling = "single-page-application"  # 可选，根路径自动回退 index.html
+directory = "./frontend"
+binding   = "ASSETS"
+run_worker_first = ["/api/*"]
+not_found_handling = "single-page-application"
 
 [triggers]
-crons = ["*/5 * * * *"]
+crons = ["*/5 * * * *"]   # 每 5 分钟执行 scheduled()
