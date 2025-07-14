@@ -1,0 +1,33 @@
+{
+  "name": "expiry-reminder",
+  "version": "1.0.0",
+  "description": "基于Cloudflare Workers、D1和Telegram的到期提醒全栈小工具",
+  "main": "src/worker.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create expiry-db",
+    "db:init": "wrangler d1 execute expiry-db --file=sql/schema.sql",
+    "db:init-local": "wrangler d1 execute expiry-db --local --file=sql/schema.sql",
+    "secret:telegram": "wrangler secret put TELEGRAM_TOKEN"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "d1",
+    "telegram",
+    "reminder",
+    "expiry"
+  ],
+  "author": "Manus AI",
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241218.0",
+    "typescript": "^5.3.3",
+    "wrangler": "^3.84.0"
+  },
+  "dependencies": {
+    "uuid": "^9.0.1"
+  }
+}
+
