@@ -18,4 +18,4 @@ run_worker_first = ["/api/*"]   # 仅 /api/* 先走 Worker，其余直接走静�
 not_found_handling = "single-page-application"  # 可选，根路径自动回退 index.html
 
 [triggers]
-crons = ["0 0 * * *"]
+crons = ["*/5 * * * *"]
