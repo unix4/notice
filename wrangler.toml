@@ -10,7 +10,7 @@ binding = "DB"
 database_name = "expiry-db"
 database_id = "004820c6-4571-4b7b-89b6-8789a20619ac"
 
-# 旧的 [site] → 新的 [assets]
+
 [assets]
 directory = "./frontend"   # 静态文件目录
 binding   = "ASSETS"       # ★ 让 env.ASSETS 可用
