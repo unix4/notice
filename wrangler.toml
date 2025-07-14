@@ -11,9 +11,7 @@ binding = "DB"
 database_name = "expiry-db"
 database_id = ""
 
-[[r2_buckets]]
-binding = "ASSETS"
-bucket_name = "expiry-reminder-assets"
+
 
 [site]
 bucket = "./frontend"
