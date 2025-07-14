@@ -3,7 +3,7 @@ main = "./src/worker.ts"
 compatibility_date = "2024-01-01"
 
 [vars]
-TELEGRAM_TOKEN = ""
+TELEGRAM_TOKEN = "7887841029:AAGgUNod2x2KDRR2r7G9Yez4ianftAjDqRw"
 
 [[d1_databases]]
 binding = "DB"
