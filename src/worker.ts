@@ -28,19 +28,14 @@ interface CreateItemRequest {
 const STATIC_ASSETS_PREFIX = '/static/';
 
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
-    // 静态文件服务
-    if (url.pathname === '/' || url.pathname === '/index.html' || url.pathname.startsWith(STATIC_ASSETS_PREFIX)) {
-      try {
-        // 确保路径正确，例如 /static/style.css 对应 style.css
-        const assetPath = url.pathname === '/' || url.pathname === '/index.html' ? 'index.html' : url.pathname.substring(STATIC_ASSETS_PREFIX.length);
-        return env.ASSETS.fetch(new Request(new URL(assetPath, request.url)));
-      } catch (e) {
-        console.error('Error serving static asset:', e);
-        return new Response('Static Asset Not Found', { status: 404 });
-      }
+    // 主页或任何 /static/* 请求
+    if (url.pathname === '/' || url.pathname === '/index.html' || url.pathname.startsWith('/static/')) {
+      // 主页需要重写到 index.html，其余保持原样
+      const key = url.pathname === '/' ? 'index.html' : url.pathname.slice(1); // 删掉开头的 /
+      return env.ASSETS.fetch(key);          // 直接传字符串更简洁
     }
 
     // 处理API请求
