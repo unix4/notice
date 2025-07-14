@@ -47,7 +47,7 @@ D1 是 Cloudflare 提供的一个基于 SQLite 的无服务器数据库。我们
 2.  在左侧导航栏中，找到并点击 **`Workers 和 Pages`**。
 3.  在 Workers 和 Pages 页面中，点击左侧的 **`D1`**。
 4.  点击 **`创建数据库`** 按钮。
-5.  为您的数据库输入一个名称，例如 `expiry-db`，然后点击 **`创建`**。
+5.  为您的数据库输入一个名称，例如 `notice-db`，然后点击 **`创建`**。
 6.  数据库创建成功后，您会看到数据库的详细信息页面。请复制页面上显示的 **`数据库 ID`** (一串长长的字符)。
 
 ### 4. 配置 Telegram Bot
@@ -76,27 +76,24 @@ D1 是 Cloudflare 提供的一个基于 SQLite 的无服务器数据库。我们
 4.  选择 **`Workers`** 选项卡，然后点击 **`部署到 Workers`**。
 5.  在“创建 Worker”页面，选择 **`从 Git 导入`**。
 6.  点击 **`连接到 GitHub`**，授权 Cloudflare 访问您的 GitHub 仓库。
-7.  选择您刚刚 Fork 的 `expiry-reminder` 仓库，然后点击 **`开始设置`**。
+7.  选择您刚刚 Fork 的 `notice` 仓库，然后点击 **`开始设置`**。
 8.  **配置构建和部署设置**：
-    - **项目名称**: 输入一个您喜欢的项目名称，例如 `expiry-reminder`。
+    - **项目名称**: 输入一个您喜欢的项目名称，例如 `notice`。
     - **生产分支**: 保持默认 `main` 或 `master` (取决于您的仓库主分支名称)。
-    - **构建命令**: 留空（本项目无需单独构建）。
-    - **构建输出目录**: 留空。
+    - **构建命令(Build command)**: bun install && bunx --bun npm install --save-dev wrangler@4
+    - **部署命令(Deploy command)**: bunx wrangler deploy
 9.  **配置环境变量**：
     - 点击 **`添加变量`**。
     - 变量名称填写 `TELEGRAM_TOKEN`，值填写您在“步骤 4”中获取到的 Telegram Bot Token。
 10. **配置 D1 数据库绑定**：
     - 点击 **`添加绑定`**。
     - 变量名称填写 `DB` (必须是这个名称)。
-    - D1 数据库选择您在“步骤 3”中创建的 `expiry-db` 数据库。
+    - D1 数据库选择您在“步骤 3”中创建的 `notice-db` 数据库。
 11. **配置 Cron 触发器**：
     - 点击 **`添加 Cron 触发器`**。
     - Cron 表达式填写 `0 0 * * *` (表示每天 00:00 America/Los_Angeles 时区触发)。
-12. **配置 R2 存储桶绑定 (可选，用于静态文件)**：
-    - 点击 **`添加绑定`**。
-    - 变量名称填写 `ASSETS` (必须是这个名称)。
-    - R2 存储桶选择 **`创建存储桶`**，输入一个名称，例如 `expiry-reminder-assets`，然后点击 **`创建`**。
-13. 确认所有设置无误后，点击 **`保存并部署`**。
+
+12. 确认所有设置无误后，点击 **`保存并部署`**。
 
 Cloudflare 将会自动从您的 GitHub 仓库拉取代码，并部署您的 Worker。部署过程可能需要几分钟，请耐心等待。
 
@@ -106,7 +103,7 @@ Cloudflare 将会自动从您的 GitHub 仓库拉取代码，并部署您的 Wor
 
 虽然我们已经绑定了 D1 数据库，但还需要手动执行一次 SQL 脚本来创建 `items` 表。
 
-1.  回到 Cloudflare 仪表板，进入 **`Workers 和 Pages`** -> **`D1`**，找到您的 `expiry-db` 数据库。
+1.  回到 Cloudflare 仪表板，进入 **`Workers 和 Pages`** -> **`D1`**，找到您的 `notice-db` 数据库。
 2.  点击数据库名称进入详情页，然后点击 **`查询`** 选项卡。
 3.  将以下 SQL 语句复制并粘贴到查询框中：
 
@@ -139,30 +136,18 @@ END;
 ```
 4.  点击 **`运行`** 按钮。如果成功，您会看到“查询成功”的提示。
 
-### 7. (可选) 本地开发与测试
 
-如果您想在本地进行开发和测试，可以使用以下命令：
 
-```bash
-# 首先确保您已安装 Node.js 和 npm，并在项目根目录运行 npm install
-npm install
-
-# 启动本地开发服务器
-npm run dev
-```
-
-这会在本地启动一个开发服务器，您可以通过访问 `http://localhost:8787` 来查看应用。本地开发时，D1 数据库会使用本地的 SQLite 文件，不会影响您部署到 Cloudflare 的线上数据库。
-
-### 8. (可选) 自定义域名
+### 7. (可选) 自定义域名
 
 如果您希望使用自己的域名来访问到期提醒工具（例如 `remind.yourdomain.com`），而不是 Cloudflare 提供的 `*.workers.dev` 域名，可以按照以下步骤操作：
 
 1.  **在 Cloudflare 中添加您的域名**: 如果您的域名还没有添加到 Cloudflare，请先将其添加到您的 Cloudflare 账号中，并按照指引配置 DNS。
 2.  **在 Workers 控制台中绑定自定义域名**: 
     - 登录 Cloudflare 控制台，进入您的 Workers 服务。
-    - 找到您部署的 `expiry-reminder` Worker。
+    - 找到您部署的 notice` Worker。
     - 在 Worker 的设置页面中，找到“触发器”或“路由”部分，添加一个新的自定义域名路由，将您的自定义域名指向这个 Worker。
-3.  **更新 DNS 记录**: 确保您的自定义域名的 DNS 记录（通常是 CNAME 记录）指向您的 Worker 域名（例如 `expiry-reminder.YOUR_WORKERS_SUBDOMAIN.workers.dev`）。
+3.  **更新 DNS 记录**: 确保您的自定义域名的 DNS 记录（通常是 CNAME 记录）指向您的 Worker 域名（例如 notice.YOUR_WORKERS_SUBDOMAIN.workers.dev`）。
 
 ## 使用说明
 
@@ -212,19 +197,6 @@ A: 请检查：
 - **域名配置是否正确**: 如果您使用了自定义域名，请检查您的 DNS 配置是否正确指向了您的 Worker。
 - **浏览器控制台是否有错误信息**: 按下 `F12` 键打开浏览器开发者工具，查看“Console”（控制台）或“Network”（网络）选项卡，是否有红色的错误信息。
 
-### 调试模式
-
-在本地开发时，您可以使用以下命令进行调试：
-
-```bash
-# 首先确保您已安装 Node.js 和 npm，并在项目根目录运行 npm install
-npm install
-
-# 启动本地开发服务器
-npm run dev
-```
-
-这会在本地启动一个开发服务器，您可以通过访问 `http://localhost:8787` 来查看应用。本地开发时，D1 数据库会使用本地的 SQLite 文件，不会影响您部署到 Cloudflare 的线上数据库。
 
 ## 贡献
 
