@@ -7,7 +7,7 @@ TELEGRAM_TOKEN = "7887841029:AAGgUNod2x2KDRR2r7G9Yez4ianftAjDqRw"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "expiry-db"
+database_name = "notice"
 database_id = "004820c6-4571-4b7b-89b6-8789a20619ac"
 
 
