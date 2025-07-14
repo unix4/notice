@@ -31,29 +31,18 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
-    // 主页或任何 /static/* 请求
-    if (url.pathname === '/' || url.pathname === '/index.html' || url.pathname.startsWith('/static/')) {
-      // 主页需要重写到 index.html，其余保持原样
-      const key = url.pathname === '/' ? 'index.html' : url.pathname.slice(1); // 删掉开头的 /
-      return env.ASSETS.fetch(key);          // 直接传字符串更简洁
-    }
-
-    // 处理API请求
     if (url.pathname.startsWith('/api/')) {
-      // 确保数据库表存在（首次请求时检查，或依赖用户手动初始化）
-      // 考虑到部署流程中用户会手动执行SQL，这里可以移除或仅在开发环境保留
-      // await ensureTableExists(env.DB);
       return handleAPI(request, env);
     }
 
-    return new Response('Not Found', { status: 404 });
+    // 交给静态资产绑定；未命中时会按 not_found_handling 回退到 index.html
+    return env.ASSETS.fetch(request);
   },
 
-  async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
-    // 确保数据库表存在（对于Cron触发，确保表存在是安全的）
+  async scheduled(event, env, ctx) {
     await ensureTableExists(env.DB);
     await checkExpiringItems(env);
-  },
+  }
 };
 
 async function ensureTableExists(db: D1Database): Promise<void> {
